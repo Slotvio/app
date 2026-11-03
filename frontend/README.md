@@ -1,3 +1,22 @@
+креате бай алеска
+# Slotvio — Frontend
+
+Веб-приложение для записи клиентов к мастерам.
+
+## Технологии
+
+- React
+- Vite
+- JavaScript
+- CSS
+
+## Запуск проекта
+
+Установи зависимости:
+
+```bash
+npm install
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

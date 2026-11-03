@@ -29,7 +29,7 @@ func main() {
 		panic(err)
 	}
 
-	server.Start()
+	go server.Start()
 
 	stop := make(chan os.Signal, 1)
 

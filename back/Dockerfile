@@ -1,1 +1,1 @@
-FROM baseImage
+FROM golang1.26

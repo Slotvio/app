@@ -1,10 +1,15 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/aleksandrboro/slotvio/internal/config"
+	"github.com/aleksandrboro/slotvio/internal/server"
 )
 
 const (
@@ -16,7 +21,30 @@ const (
 func main() {
 	cfg := config.MustLoad()
 	log := setupLogger(cfg.App.Env)
-	log.Info("config", slog.Any("config", cfg))
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	server, err := server.NewServer(log, cfg, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	server.Start()
+
+	stop := make(chan os.Signal, 1)
+
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	sign := <-stop
+
+	log.Info("stopping application", slog.String("signal", sign.String()))
+
+	ctx, cancel = context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	server.Shutdown(ctx)
+
+	log.Info("application stopped")
 }
 
 func setupLogger(env string) *slog.Logger {

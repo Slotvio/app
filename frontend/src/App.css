@@ -134,11 +134,17 @@ h1 {
 }
 
 .back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin: -8px 0 22px;
-  padding: 0;
+  padding: 8px 12px;
   border: 0;
-  background: none;
+  border-radius: 10px;
+  background: #eef4ff;
   color: #2878ed;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .mode-switch {
@@ -175,6 +181,7 @@ h1 {
   gap: 8px;
   color: #53617a;
   font-size: 14px;
+  text-align: left;
 }
 
 .auth-form input {

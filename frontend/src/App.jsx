@@ -24,7 +24,7 @@ function App() {
         {!role ? (
           <>
             <h1>Добро пожаловать!</h1>
-            <p className="subtitle">Записывайтесь удобно — в пару касаний</p>
+            <p className="subtitle">Сервис онлайн-записи</p>
 
             <h2 className="section-title">Продолжить как</h2>
 
@@ -54,9 +54,6 @@ function App() {
           </>
         ) : (
           <>
-            <button className="back-button" onClick={goBack}>
-              ← Назад
-            </button>
 
             <h1>{role === "master" ? "Кабинет мастера" : "Добро пожаловать!"}</h1>
             <p className="subtitle">
@@ -98,6 +95,10 @@ function App() {
 
               <button className="primary-button" type="submit">
                 {mode === "register" ? "Создать аккаунт" : "Войти"}
+              </button>
+              
+              <button className="back-button" onClick={goBack}>
+              ← Назад
               </button>
             </form>
           </>

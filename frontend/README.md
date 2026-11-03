@@ -16,6 +16,7 @@
 
 ```bash
 npm install
+```
 
 # React + Vite
 

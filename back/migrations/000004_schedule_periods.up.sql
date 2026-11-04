@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS schedule_periods (
+    id PRIMARY KEY,
+    master_id INT,
+    day_of_week SMALLINT NOT NULL CHECK (
+        day_of_week >= 1
+        AND day_of_week <= 7
+    ),
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    FOREIGN KEY (master_id) REFERENCES masters (id) ON DELETE CASCADE,
+    CONSTRAINT chk_start_end CHECK (start_time < end_time)
+);

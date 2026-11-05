@@ -1,0 +1,212 @@
+.master-app {
+  width: min(100%, 520px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 22px 20px 100px;
+  background: #fff;
+  color: #17233f;
+}
+
+.master-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.master-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+  font-weight: 750;
+  letter-spacing: -0.7px;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #2878ed;
+  color: white;
+}
+
+.settings-button {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 13px;
+  background: #eef4ff;
+  color: #2878ed;
+  font-size: 20px;
+}
+
+.master-content h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.muted {
+  margin: 7px 0 22px;
+  color: #7b879d;
+}
+
+.calendar-card {
+  padding: 18px;
+  border: 1px solid #e7edf7;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 8px 28px #1a31500b;
+}
+
+.calendar-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.calendar-heading strong {
+  font-size: 17px;
+}
+
+.calendar-heading button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: #eef4ff;
+  color: #2878ed;
+  font-size: 24px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+  text-align: center;
+}
+
+.weekday {
+  padding: 8px 0;
+  color: #8793a8;
+  font-size: 12px;
+}
+
+.calendar-day,
+.empty-day {
+  aspect-ratio: 1;
+}
+
+.calendar-day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #263653;
+}
+
+.calendar-day.selected {
+  background: #2878ed;
+  color: white;
+}
+
+.calendar-day i {
+  position: absolute;
+  bottom: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #2878ed;
+}
+
+.calendar-day.selected i {
+  background: white;
+}
+
+.planner-settings {
+  margin-top: 24px;
+}
+
+.planner-settings h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.planner-settings button {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 16px;
+  border: 1px solid #e7edf7;
+  border-radius: 15px;
+  background: #f5f8fe;
+  color: #263653;
+  text-align: left;
+}
+
+.empty-state {
+  margin-top: 25px;
+  padding: 28px 20px;
+  border-radius: 20px;
+  background: #f2f6fd;
+  text-align: center;
+}
+
+.empty-state span {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 30px;
+}
+
+.empty-state p {
+  margin-bottom: 0;
+  color: #7b879d;
+}
+
+.add-appointment {
+  width: 100%;
+  margin-top: 18px;
+  padding: 15px;
+  border: 0;
+  border-radius: 15px;
+  background: #2878ed;
+  color: white;
+  font-weight: 650;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: min(100%, 520px);
+  padding: 10px 12px 18px;
+  border-top: 1px solid #e8edf5;
+  background: #fff;
+  transform: translateX(-50%);
+}
+
+.bottom-nav button {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: #8793a8;
+  font-size: 12px;
+}
+
+.bottom-nav button span {
+  font-size: 23px;
+}
+
+.bottom-nav button.active {
+  color: #2878ed;
+}

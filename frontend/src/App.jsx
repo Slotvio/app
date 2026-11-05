@@ -1,7 +1,11 @@
 import { useState } from "react";
 import "./App.css";
+import MasterCabinet from "./MasterCabinet";
+import ClientCabinet from "./ClientCabinet";
 
 function App() {
+  return <ClientCabinet />;
+  return <MasterCabinet />;
   const [role, setRole] = useState(null);
   const [mode, setMode] = useState("register");
 

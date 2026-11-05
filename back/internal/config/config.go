@@ -16,6 +16,7 @@ var (
 type Config struct {
 	App    AppCfg    `yaml:"app"`
 	Server ServerCfg `yaml:"server"`
+	DB     DBCfg     `yaml:"db"`
 }
 
 type AppCfg struct {
@@ -33,6 +34,14 @@ type ServerCfg struct {
 	IdleTimeout  time.Duration `yaml:"idle_timeout"`
 }
 
+type DBCfg struct {
+	User     string `env:"DB_USER"`
+	Password string `env:"DB_PASS"`
+	Host     string `env:"DB_HOST"`
+	Port     string `env:"DB_PORT"`
+	Name     string `env:"DB_NAME"`
+}
+
 func MustLoad() Config {
 	path := fetchConfigPath()
 
@@ -47,6 +56,10 @@ func MustLoad() Config {
 	var cfg Config
 
 	if err := cleanenv.ReadConfig(path, &cfg); err != nil {
+		panic(err)
+	}
+
+	if err := cleanenv.ReadConfig(".env", &cfg.DB); err != nil {
 		panic(err)
 	}
 

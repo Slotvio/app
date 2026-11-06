@@ -1,17 +1,22 @@
+
+* {
+  box-sizing: border-box;
+}
+
 .client-app {
   width: min(100%, 520px);
   min-height: 100vh;
   margin: 0 auto;
-  padding: 22px 20px 100px;
+  padding: 22px 20px 105px;
   color: #17233f;
   background: #fff;
+  font-family: Inter, Arial, sans-serif;
 }
 
 .client-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
 }
 
 .client-brand {
@@ -32,142 +37,540 @@
   color: white;
 }
 
-.client-avatar,
-.client-profile-photo {
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 50%;
-  background: #e5efff;
-  color: #2878ed;
-  font-weight: 700;
-}
-
-.client-avatar {
-  width: 40px;
-  height: 40px;
-}
-
-.client-app h1 {
+.client-title {
   margin: 0;
   font-size: 27px;
   letter-spacing: -0.7px;
 }
 
-.client-muted {
+.client-subtitle {
   margin: 8px 0 22px;
   color: #7b879d;
+  font-size: 14px;
+}
+
+.search-panel {
+  position: relative;
+  z-index: 2;
 }
 
 .master-search,
-.client-filters select,
-.client-filters input {
+.city-search {
   width: 100%;
-  min-width: 0;
-  padding: 13px;
-  border: 1px solid #e0e8f4;
-  border-radius: 13px;
+  padding: 15px;
+  border: 1px solid #dfe7f3;
+  border-radius: 14px;
   outline: none;
   background: #f8faff;
   color: #17233f;
+  font-size: 14px;
 }
 
-.master-search {
-  margin-bottom: 12px;
+.master-search:focus,
+.city-search:focus {
+  border-color: #2878ed;
 }
 
-.client-filters {
+.search-controls {
+  position: relative;
+  margin-top: 10px;
+}
+
+.city-picker {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 9px;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
 }
 
-.client-results-heading {
+.picker-button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #dfe7f3;
+  border-radius: 13px;
+  background: #f8faff;
+  color: #53617a;
+  font-size: 13px;
+  text-align: left;
+}
+
+.picker-arrow {
+  margin-left: auto;
+}
+
+.date-button {
+  overflow: hidden;
+}
+
+.date-button-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.find-button {
+  padding: 0 19px;
+  border: 0;
+  border-radius: 13px;
+  background: #2878ed;
+  color: white;
+  font-weight: 650;
+}
+
+.city-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 5;
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px;
+  border: 1px solid #e1e9f6;
+  border-radius: 17px;
+  background: white;
+  box-shadow: 0 12px 35px #1a315020;
+}
+
+.date-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 6;
+  width: min(100%, 380px);
+  max-height: min(76vh, 650px);
+  margin-top: 8px;
+  padding: 16px;
+  overflow-y: auto;
+  border: 1px solid #e1e9f6;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 14px 38px #1a315020;
+}
+
+.date-popover-heading,
+.date-calendar-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 25px 0 13px;
 }
 
-.client-results-heading h2 {
+.date-popover-heading h2,
+.date-calendar-heading h3,
+.time-filter h3 {
   margin: 0;
-  font-size: 18px;
+  color: #17233f;
+  font-size: 15px;
 }
 
-.client-results-heading span {
-  color: #7b879d;
+.popover-close {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 10px;
+  background: #f2f6fd;
+  color: #71809a;
+  font-size: 21px;
+}
+
+.date-presets,
+.time-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.date-presets {
+  margin: 13px 0 14px;
+}
+
+.date-presets button,
+.time-presets button {
+  min-height: 35px;
+  padding: 7px 10px;
+  border: 1px solid #e0e7f2;
+  border-radius: 11px;
+  background: #f8faff;
+  color: #53617a;
+  font-size: 12px;
+}
+
+.date-presets button.selected,
+.time-presets button.selected {
+  border-color: #2878ed;
+  background: #eaf2ff;
+  color: #2878ed;
+}
+
+.date-calendar-heading {
+  margin-bottom: 9px;
+}
+
+.date-calendar-heading h3 {
+  text-transform: capitalize;
+}
+
+.date-calendar-heading button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: #f2f6fd;
+  color: #2878ed;
+  font-size: 21px;
+}
+
+.date-calendar-heading button:disabled {
+  color: #b9c3d2;
+  cursor: not-allowed;
+}
+
+.date-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.date-calendar-weekday,
+.date-calendar-empty,
+.date-calendar-day {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 36px;
+}
+
+.date-calendar-weekday {
+  color: #8793a8;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.date-calendar-day {
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: #263653;
+  font-size: 13px;
+}
+
+.date-calendar-day:hover:not(:disabled) {
+  background: #f0f5ff;
+}
+
+.date-calendar-day.selected {
+  background: #2878ed;
+  color: #fff;
+  font-weight: 700;
+}
+
+.date-calendar-day:disabled {
+  color: #c3cad5;
+  cursor: not-allowed;
+}
+
+.time-filter {
+  margin-top: 14px;
+  padding-top: 13px;
+  border-top: 1px solid #edf1f7;
+}
+
+.time-filter h3 {
+  margin-bottom: 9px;
+}
+
+.exact-time-label {
+  display: block;
+  margin: 12px 0 6px;
+  color: #71809a;
+  font-size: 12px;
+}
+
+.exact-time-input {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 11px;
+  border: 1px solid #dfe7f3;
+  border-radius: 11px;
+  background: #f8faff;
+  color: #17233f;
+  font: inherit;
+}
+
+.date-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #edf1f7;
+}
+
+.reset-date,
+.done-date {
+  min-height: 42px;
+  padding: 0 15px;
+  border-radius: 11px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.reset-date {
+  border: 1px solid #dfe7f3;
+  background: #fff;
+  color: #53617a;
+}
+
+.done-date {
+  flex: 1;
+  border: 0;
+  background: #2878ed;
+  color: #fff;
+}
+
+.country-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #f0f4fb;
+}
+
+.country-switch button,
+.booking-tabs button {
+  padding: 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #71809a;
+}
+
+.country-switch button.selected,
+.booking-tabs button.active {
+  background: white;
+  color: #2878ed;
+  box-shadow: 0 2px 8px #1a31500f;
+}
+
+.city-search {
+  padding: 11px;
+  font-size: 13px;
+}
+
+.dropdown-label {
+  margin: 14px 0 9px;
+  color: #8793a8;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.city-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.city-chips button {
+  padding: 7px 11px;
+  border: 1px solid #e0e7f2;
+  border-radius: 20px;
+  background: #f7f9fd;
+  color: #53617a;
+  font-size: 12px;
+}
+
+.city-chips button.selected {
+  border-color: #2878ed;
+  background: #eaf2ff;
+  color: #2878ed;
+}
+
+.clear-city {
+  margin-top: 13px;
+  padding: 8px 0;
+  border: 0;
+  background: transparent;
+  color: #2878ed;
+  font-size: 13px;
+}
+
+.results-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 27px 0 13px;
+}
+
+.results-heading h2 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.results-heading span {
+  color: #8793a8;
+  font-size: 13px;
 }
 
 .master-list {
   display: grid;
-  gap: 12px;
+  gap: 17px;
 }
 
 .master-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  border: 1px solid #e7edf7;
-  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #e5ebf5;
+  border-radius: 17px;
   background: white;
+  cursor: pointer;
 }
 
-.master-photo {
-  display: grid;
-  place-items: center;
-  flex: 0 0 54px;
-  height: 54px;
-  border-radius: 16px;
-  background: #e5efff;
-  color: #2878ed;
+.master-image {
+  position: relative;
+  height: 205px;
+  overflow: hidden;
+  background: #e8effa;
+}
+
+.master-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.master-rating {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: white;
+  color: #263653;
+  font-size: 12px;
   font-weight: 700;
 }
 
-.master-info {
-  flex: 1;
-  min-width: 0;
+.master-card-info {
+  padding: 12px;
 }
 
-.master-info h3 {
-  margin: 0 0 5px;
-  font-size: 15px;
+.master-card-info h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
 }
 
-.master-info p {
-  margin: 3px 0;
-  color: #7b879d;
-  font-size: 12px;
+.service-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
-.master-next {
-  display: block;
-  margin-top: 7px;
+.service-tags span {
+  padding: 5px 9px;
+  border: 1px solid #cbdcff;
+  border-radius: 20px;
+  background: #f4f8ff;
   color: #2878ed;
   font-size: 11px;
 }
 
-.master-open {
+.master-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  color: #7b879d;
+  font-size: 12px;
+}
+
+.master-card-bottom strong {
+  color: #17233f;
+  white-space: nowrap;
+}
+
+.no-results {
+  margin-top: 20px;
+  padding: 25px;
+  border-radius: 16px;
+  background: #f3f6fc;
+  color: #7b879d;
+  text-align: center;
+  font-size: 14px;
+}
+
+.master-detail > img {
+  width: 100%;
+  height: 270px;
+  margin-top: 18px;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+.master-detail h1 {
+  margin-top: 16px;
+}
+
+.back-link {
+  padding: 0;
   border: 0;
   background: transparent;
   color: #2878ed;
-  font-size: 25px;
 }
 
-.client-placeholder,
+.booking-action {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 15px;
+}
+
+.booking-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-top: 22px;
+  padding: 5px;
+  border-radius: 13px;
+  background: #f0f4fb;
+}
+
+.profile-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-settings {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 12px;
+  background: #eef4ff;
+  color: #2878ed;
+  font-size: 20px;
+}
+
 .client-profile-card {
   margin-top: 22px;
-  padding: 24px;
+  padding: 25px;
   border-radius: 20px;
   background: #f2f6fd;
   text-align: center;
 }
 
 .client-profile-photo {
+  display: grid;
+  place-items: center;
   width: 70px;
   height: 70px;
   margin: 0 auto 14px;
-  font-size: 24px;
+  border-radius: 50%;
+  background: #e0ebff;
+  color: #2878ed;
+  font-size: 25px;
+  font-weight: 700;
 }
 
 .client-profile-card h2 {
@@ -215,4 +618,20 @@
 
 .client-bottom-nav button.active {
   color: #2878ed;
+}
+
+@media (max-width: 380px) {
+  .client-app {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .city-picker {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .find-button {
+    grid-column: 1 / -1;
+    min-height: 43px;
+  }
 }

@@ -1,36 +1,28 @@
 креате бай алеска
 # Slotvio — Frontend
 
-Веб-приложение для записи клиентов к мастерам.
+Slotvio — мобильное веб-приложение/PWA для поиска независимых мастеров услуг и записи к ним. Frontend создаётся на React, Vite, JavaScript и CSS. Backend разрабатывается отдельно на Go; API-контракт пока не зафиксирован.
 
-## Технологии
+## Разработка
 
-- React
-- Vite
-- JavaScript
-- CSS
+Требуется установленный Node.js и npm. В PowerShell:
 
-## Запуск проекта
-
-Установи зависимости:
-
-```bash
+```powershell
 npm install
+npm.cmd run dev
 ```
 
-# React + Vite
+Vite обычно открывается по адресу http://localhost:5173. Другие доступные команды: `npm run build`, `npm run lint`, `npm run preview`.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Документация проекта
 
-Currently, two official plugins are available:
+Перед продуктовыми или UI-изменениями ознакомьтесь с:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- [Требованиями к продукту](docs/PRODUCT_REQUIREMENTS.md)
+- [Правилами UI/UX](docs/UI_UX_GUIDELINES.md)
+- [Зафиксированными решениями и открытыми вопросами](docs/DECISIONS.md)
+- [Инструкциями для помощников](AGENTS.md)
 
-## React Compiler
+## Текущее состояние
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+В репозитории есть экраны кабинета мастера и клиента с демонстрационными данными. Сейчас `src/App.jsx` сразу возвращает `<ClientCabinet />`; ниже находятся недостижимые возвраты MasterCabinet и прежний интерфейс выбора роли/входа. Считайте это временным состоянием прототипа, не утверждённой схемой маршрутизации или готовой авторизацией. Данные и действия пока локальные/демонстрационные; интеграция с backend не подтверждена.

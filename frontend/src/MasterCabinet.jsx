@@ -36,9 +36,11 @@ function MasterCabinet() {
           <span className="brand-mark">✓</span>
           <span>Slotvio</span>
         </div>
-        <button className="settings-button" aria-label="Настройки профиля">
-          ⚙
-        </button>
+        {tab === "profile" && (
+          <button className="settings-button" aria-label="Настройки профиля" title="Настройки профиля">
+            ⚙
+          </button>
+        )}
       </header>
 
       {tab === "planner" && (

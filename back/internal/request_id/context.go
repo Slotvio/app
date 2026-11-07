@@ -5,20 +5,19 @@ import (
 	"errors"
 )
 
-const (
-	typeRequestID = "request_id"
-)
+type RequestIDType string
 
 var (
-	errInvalidIDType = errors.New("request_id isn't a string")
+	errInvalidIDType               = errors.New("request_id isn't a string")
+	requestIDKey     RequestIDType = "request_id"
 )
 
 func WithRequestID(ctx context.Context, id string) context.Context {
-	return context.WithValue(ctx, typeRequestID, id)
+	return context.WithValue(ctx, requestIDKey, id)
 }
 
-func RequestIDFromContext(ctx context.Context) (string, error) {
-	id, ok := ctx.Value(typeRequestID).(string)
+func RequestIDFromContext(ctx context.Context) (RequestIDType, error) {
+	id, ok := ctx.Value(requestIDKey).(RequestIDType)
 
 	if !ok {
 		return "", errInvalidIDType

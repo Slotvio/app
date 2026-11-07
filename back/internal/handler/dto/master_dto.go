@@ -1,6 +1,6 @@
-package handler
+package dto
 
-type CreateMasterRequest struct {
+type CreateProfileRequest struct {
 	Slug        string `json:"slug"`
 	Title       string `json:"title"`
 	Category    string `json:"category"`

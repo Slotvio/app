@@ -7,7 +7,7 @@ type Service struct {
 	MasterID        int
 	Name            string
 	Description     string
-	DurationMinutes int8
+	DurationMinutes int
 	Price           int
 	IsActive        bool
 	CreatedAt       time.Time

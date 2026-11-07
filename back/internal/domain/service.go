@@ -3,8 +3,8 @@ package domain
 import "time"
 
 type Service struct {
-	ID              int
-	MasterID        int
+	ID              int64
+	MasterID        int64
 	Name            string
 	Description     string
 	DurationMinutes int

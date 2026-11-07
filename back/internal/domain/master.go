@@ -3,8 +3,8 @@ package domain
 import "time"
 
 type Master struct {
-	ID                int
-	UserID            int
+	ID                int64
+	UserID            int64
 	Slug              string
 	Title             string
 	Description       string

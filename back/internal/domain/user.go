@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type User struct {
-	ID         int
+	ID         int64
 	TelegramID int64
 	FirstName  string
 	LastName   string

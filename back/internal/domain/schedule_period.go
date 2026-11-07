@@ -3,8 +3,8 @@ package domain
 import "time"
 
 type SchedulePeriod struct {
-	ID        int
-	MasterID  int
+	ID        int64
+	MasterID  int64
 	DayOfWeek int8
 	StartTime time.Time
 	EndTime   time.Time

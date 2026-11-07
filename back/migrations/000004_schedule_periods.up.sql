@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS schedule_periods (
         day_of_week >= 1
         AND day_of_week <= 7
     ),
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
+    start_at TIMESTAMPTZ NOT NULL,
+    end_at TIMESTAMPTZ NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     FOREIGN KEY (master_id) REFERENCES masters (id) ON DELETE CASCADE,

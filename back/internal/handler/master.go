@@ -79,7 +79,7 @@ type MasterService interface {
 }
 
 func (h *MasterHandler) HandleCreateProfile(w http.ResponseWriter, r *http.Request) {
-	// op := "MasterHandler.HandleCreateProfile"
+	op := "MasterHandler.HandleCreateProfile"
 
-	// log := h.log.With(slog.String("op", op))
+	log := h.log.With(slog.String("op", op))
 }

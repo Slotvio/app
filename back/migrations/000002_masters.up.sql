@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS masters (
     category TEXT NOT NULL,
     description TEXT,
     timezone TEXT NOT NULL,
-    subscription_until TIMESTAMPTZ,
+    subscription_until TIMESTAMPTZ NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE

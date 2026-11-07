@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS bookings (
         )
     ),
     client_comment TEXT,
-    reminder_sent_at TIMESTAMPTZ,
+    reminder_sent_at TIMESTAMPTZ NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     CHECK (end_at > start_at),

@@ -7,8 +7,8 @@ import (
 )
 
 type ErrorMessage struct {
-	Code    int
-	Message string
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 func WriteError(log *slog.Logger, w http.ResponseWriter, code int, msg string) {

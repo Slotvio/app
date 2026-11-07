@@ -7,6 +7,7 @@ type Master struct {
 	UserID            int64
 	Slug              string
 	Title             string
+	Category          string
 	Description       string
 	Timezone          string
 	SubscriptionUntil time.Time

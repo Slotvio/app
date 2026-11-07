@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS masters (
     user_id BIGINT NOT NULL UNIQUE,
     slug TEXT NOT NULL UNIQUE CHECK (slug ~ '^[a-z0-9_-]{3,40}$'),
     title TEXT NOT NULL,
-    category TEXT,
+    category TEXT NOT NULL,
     description TEXT,
     timezone TEXT NOT NULL,
     subscription_until TIMESTAMPTZ,

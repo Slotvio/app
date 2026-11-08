@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	errInvalidIDType = errors.New("request_id isn't a string")
+	errRequestIDNotFound = errors.New("request_id not found in context")
 )
 
 type requestIDKey struct{}
@@ -18,7 +18,7 @@ func WithRequestID(ctx context.Context, id string) context.Context {
 func RequestIDFromContext(ctx context.Context) (string, error) {
 	id, ok := ctx.Value(requestIDKey{}).(string)
 	if !ok {
-		return "", errors.New("request_id not found in context")
+		return "", errRequestIDNotFound
 	}
 	return id, nil
 }

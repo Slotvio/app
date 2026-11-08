@@ -51,7 +51,7 @@ type MasterService interface {
 	GetPublicProfile(
 		ctx context.Context,
 		slug string,
-	) (*domain.Master, error)
+	) (*service.PublicProfileOutput, error)
 
 	UpdateProfile(
 		ctx context.Context,
@@ -89,7 +89,7 @@ type MasterService interface {
 	) ([]domain.SchedulePeriod, error)
 }
 
-// Create master profile handler
+// POST /api/v1/master/profile; Create master profile handler
 func (h *MasterHandler) HandleCreateProfile(w http.ResponseWriter, r *http.Request) {
 	op := "MasterHandler.HandleCreateProfile"
 	log := h.log.With(slog.String("op", op))
@@ -157,13 +157,19 @@ func (h *MasterHandler) HandleCreateProfile(w http.ResponseWriter, r *http.Reque
 		WriteError(log, w, http.StatusInternalServerError, "internal error")
 		return
 	}
+	if master == nil {
+		WriteError(log, w, http.StatusNotFound, "masters profile not found")
+		return
+	}
 
-	resp := dto.ProfileResponse{
-		Slug:        master.Slug,
-		Title:       master.Title,
-		Category:    master.Category,
-		Description: master.Description,
-		Timezone:    master.Timezone,
+	resp := dto.CreateProfileResponse{
+		ID:                master.ID,
+		Slug:              master.Slug,
+		Title:             master.Title,
+		Category:          master.Category,
+		Description:       master.Description,
+		Timezone:          master.Timezone,
+		SubscriptionUntil: master.SubscriptionUntil,
 	}
 
 	body, err := json.Marshal(resp)
@@ -186,7 +192,7 @@ func (h *MasterHandler) HandleCreateProfile(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-// Get masters own profile
+// GET /api/v1/master/profile; Get masters own profile
 func (h *MasterHandler) HandleOwnProfile(w http.ResponseWriter, r *http.Request) {
 	op := "MasterHandler.HandleOwnProfile"
 	log := h.log.With(slog.String("op", op))
@@ -217,7 +223,7 @@ func (h *MasterHandler) HandleOwnProfile(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	resp := dto.ProfileResponse{
+	resp := dto.OwnProfileResponse{
 		Slug:        master.Slug,
 		Title:       master.Title,
 		Category:    master.Category,
@@ -245,9 +251,9 @@ func (h *MasterHandler) HandleOwnProfile(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-// Get masters public profile
+// GET /api/v1/masters/{slug}; Get masters public profile
 func (h *MasterHandler) HandlePublicProfile(w http.ResponseWriter, r *http.Request) {
-	op := "MasterHandler.HandleOwnProfile"
+	op := "MasterHandler.HandlePublicProfile"
 	log := h.log.With(slog.String("op", op))
 	ctx := r.Context()
 
@@ -265,23 +271,33 @@ func (h *MasterHandler) HandlePublicProfile(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	master, err := h.masterService.GetPublicProfile(ctx, slug)
+	profileData, err := h.masterService.GetPublicProfile(ctx, slug)
 	if err != nil {
 		log.Error("failed to get masters public profile", slog.String("error", err.Error()))
 		WriteError(log, w, http.StatusInternalServerError, "internal error")
 		return
 	}
-	if master == nil {
+	if profileData == nil {
 		WriteError(log, w, http.StatusNotFound, "masters profile not found")
 		return
 	}
 
-	resp := dto.ProfileResponse{
-		Slug:        master.Slug,
-		Title:       master.Title,
-		Category:    master.Category,
-		Description: master.Description,
-		Timezone:    master.Timezone,
+	resp := dto.PublicProfileResponse{
+		Slug:        profileData.Master.Slug,
+		Title:       profileData.Master.Title,
+		Category:    profileData.Master.Category,
+		Description: profileData.Master.Description,
+		Timezone:    profileData.Master.Timezone,
+		Services:    make([]dto.ServiceInfo, 0, len(profileData.Services)),
+	}
+
+	for _, s := range profileData.Services {
+		resp.Services = append(resp.Services, dto.ServiceInfo{
+			Name:            s.Name,
+			Description:     s.Description,
+			DurationMinutes: s.DurationMinutes,
+			Price:           s.Price,
+		})
 	}
 
 	body, err := json.Marshal(resp)
@@ -299,6 +315,243 @@ func (h *MasterHandler) HandlePublicProfile(w http.ResponseWriter, r *http.Reque
 	if _, err := w.Write(body); err != nil {
 		log.Error("failed to send response",
 			slog.String("master", resp.Slug),
+			slog.Any("error", err),
+		)
+	}
+}
+
+// PATCH /api/v1/master/profile; Update masters profile
+func (h *MasterHandler) HandleUpdateProfile(w http.ResponseWriter, r *http.Request) {
+	op := "MasterHandler.HandleUpdateProfile"
+	log := h.log.With(slog.String("op", op))
+	ctx := r.Context()
+
+	requestID, err := requestid.RequestIDFromContext(ctx)
+	if err != nil {
+		log.Error("failed to get request_id from context", slog.Any("error", err))
+		WriteError(log, w, http.StatusInternalServerError, "internal error")
+		return
+	}
+	log = log.With(slog.String("request_id", string(requestID)))
+
+	userID, ok := auth.UserIDFromContext(ctx)
+	if !ok {
+		WriteError(log, w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	defer r.Body.Close()
+
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<16)
+
+	var req dto.UpdateProfileRequest
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&req); err != nil {
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			WriteError(log, w, http.StatusRequestEntityTooLarge, "request body too large")
+			return
+		}
+
+		WriteError(log, w, http.StatusBadRequest, "failed to parse request body")
+		return
+	}
+
+	if err := decoder.Decode(&struct{}{}); err != io.EOF {
+		WriteError(log, w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	input := service.UpdateProfileInput{
+		Title:       req.Title,
+		Category:    req.Category,
+		Description: req.Description,
+		Timezone:    req.Timezone,
+	}
+
+	master, err := h.masterService.UpdateProfile(ctx, userID, input)
+	if err != nil {
+		log.Error("failed to update masters profile", slog.String("error", err.Error()))
+		WriteError(log, w, http.StatusInternalServerError, "internal error")
+		return
+	}
+	if master == nil {
+		WriteError(log, w, http.StatusNotFound, "masters profile not found")
+		return
+	}
+
+	resp := dto.OwnProfileResponse{
+		Slug:        master.Slug,
+		Title:       master.Title,
+		Category:    master.Category,
+		Description: master.Description,
+		Timezone:    master.Timezone,
+	}
+
+	body, err := json.Marshal(resp)
+	if err != nil {
+		log.Error("failed to marshal update profile response", slog.Any("error", err))
+		WriteError(log, w, http.StatusInternalServerError, "internal error")
+		return
+	}
+
+	log.Info("profile updated", slog.String("master", resp.Slug))
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if _, err := w.Write(body); err != nil {
+		log.Error("failed to send response",
+			slog.String("master", resp.Slug),
+			slog.Any("error", err),
+		)
+	}
+}
+
+// GET /api/v1/master/services; Get masters services
+func (h *MasterHandler) HandleListServices(w http.ResponseWriter, r *http.Request) {
+	op := "MasterHandler.HandleListServices"
+	log := h.log.With(slog.String("op", op))
+	ctx := r.Context()
+
+	requestID, err := requestid.RequestIDFromContext(ctx)
+	if err != nil {
+		log.Error("failed to get request_id from context", slog.Any("error", err))
+		WriteError(log, w, http.StatusInternalServerError, "internal error")
+		return
+	}
+	log = log.With(slog.String("request_id", string(requestID)))
+
+	userID, ok := auth.UserIDFromContext(ctx)
+	if !ok {
+		WriteError(log, w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	services, err := h.masterService.ListServices(ctx, userID)
+	if err != nil || services == nil {
+		log.Error("failed to get masters services", slog.String("error", err.Error()))
+		WriteError(log, w, http.StatusInternalServerError, "internal error")
+		return
+	}
+
+	resp := dto.ListServiceResponse{
+		Services: make([]dto.ServiceInfo, 0, len(services)),
+	}
+
+	for _, s := range services {
+		resp.Services = append(resp.Services, dto.ServiceInfo{
+			Name:            s.Name,
+			Description:     s.Description,
+			DurationMinutes: s.DurationMinutes,
+			Price:           s.Price,
+		})
+	}
+
+	body, err := json.Marshal(resp)
+	if err != nil {
+		log.Error("failed to marshal list services response", slog.Any("error", err))
+		WriteError(log, w, http.StatusInternalServerError, "internal error")
+		return
+	}
+
+	log.Info("services received", slog.Int64("master", userID))
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if _, err := w.Write(body); err != nil {
+		log.Error("failed to send response",
+			slog.Int64("master_id", userID),
+			slog.Any("error", err),
+		)
+	}
+}
+
+// POST /api/v1/master/services; Create new service
+func (h *MasterHandler) HandleCreateService(w http.ResponseWriter, r *http.Request) {
+	op := "MasterHandler.HandleCreateService"
+	log := h.log.With(slog.String("op", op))
+	ctx := r.Context()
+
+	requestID, err := requestid.RequestIDFromContext(ctx)
+	if err != nil {
+		log.Error("failed to get request_id from context", slog.Any("error", err))
+		WriteError(log, w, http.StatusInternalServerError, "internal error")
+		return
+	}
+	log = log.With(slog.String("request_id", string(requestID)))
+
+	userID, ok := auth.UserIDFromContext(ctx)
+	if !ok {
+		WriteError(log, w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+
+	defer r.Body.Close()
+
+	r.Body = http.MaxBytesReader(w, r.Body, 1<<16)
+
+	var req dto.CreateServiceRequest
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(&req); err != nil {
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			WriteError(log, w, http.StatusRequestEntityTooLarge, "request body too large")
+			return
+		}
+
+		WriteError(log, w, http.StatusBadRequest, "failed to parse request body")
+		return
+	}
+
+	if err := decoder.Decode(&struct{}{}); err != io.EOF {
+		WriteError(log, w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+
+	input := service.CreateServiceInput{
+		Name:            req.Name,
+		Description:     req.Description,
+		DurationMinutes: req.DurationMinutes,
+		Price:           req.Price,
+	}
+
+	service, err := h.masterService.CreateService(ctx, userID, input)
+	if err != nil || service == nil {
+		log.Error("failed to create service", slog.String("error", err.Error()))
+		WriteError(log, w, http.StatusInternalServerError, "internal error")
+		return
+	}
+
+	resp := dto.CreateServiceResponse{
+		ID:              service.ID,
+		Name:            service.Name,
+		Description:     service.Description,
+		DurationMinutes: service.DurationMinutes,
+		Price:           service.Price,
+		IsActive:        service.IsActive,
+	}
+
+	body, err := json.Marshal(resp)
+	if err != nil {
+		log.Error("failed to marshal create service response", slog.Any("error", err))
+		WriteError(log, w, http.StatusInternalServerError, "internal error")
+		return
+	}
+
+	log.Info("service created", slog.Int64("master", userID))
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if _, err := w.Write(body); err != nil {
+		log.Error("failed to send response",
+			slog.Int64("master_id", userID),
 			slog.Any("error", err),
 		)
 	}

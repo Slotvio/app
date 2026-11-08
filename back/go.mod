@@ -4,7 +4,7 @@ go 1.26.5
 
 require github.com/golang-migrate/migrate/v4 v4.20.1
 
-require github.com/gorilla/mux v1.8.1 // indirect
+require github.com/gorilla/mux v1.8.1
 
 require (
 	github.com/BurntSushi/toml v1.6.0 // indirect

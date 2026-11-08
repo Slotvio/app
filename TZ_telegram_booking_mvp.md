@@ -310,7 +310,7 @@ Go API ───────── PostgreSQL
 
 ### Маршруты мастера
 
-- `POST /api/v1/master/profile` — создать профиль.
+- `POST /api/v1/master/profile` — создать профиль. 
 - `GET /api/v1/master/profile` — получить профиль.
 - `PATCH /api/v1/master/profile` — изменить профиль.
 - `GET /api/v1/master/services` — список услуг.

@@ -65,6 +65,7 @@ type ListServiceResponse struct {
 
 // HandleListServices
 type ServiceInfo struct {
+	ID              int64  `json:"id"`
 	Name            string `json:"name"`
 	Description     string `json:"description"`
 	DurationMinutes int    `json:"duration_minutes"`

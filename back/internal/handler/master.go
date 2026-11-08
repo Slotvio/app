@@ -445,6 +445,7 @@ func (h *MasterHandler) HandleListServices(w http.ResponseWriter, r *http.Reques
 
 	for _, s := range services {
 		resp.Services = append(resp.Services, dto.ServiceInfo{
+			ID:              s.ID,
 			Name:            s.Name,
 			Description:     s.Description,
 			DurationMinutes: s.DurationMinutes,
@@ -459,14 +460,14 @@ func (h *MasterHandler) HandleListServices(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	log.Info("services received", slog.Int64("master_id", userID))
+	log.Info("services received", slog.Int64("user_id", userID))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
 	if _, err := w.Write(body); err != nil {
 		log.Error("failed to send response",
-			slog.Int64("master_id", userID),
+			slog.Int64("user_id", userID),
 			slog.Any("error", err),
 		)
 	}
@@ -546,14 +547,14 @@ func (h *MasterHandler) HandleCreateService(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	log.Info("service created", slog.Int64("master_id", userID))
+	log.Info("service created", slog.Int64("user_id", userID))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
 	if _, err := w.Write(body); err != nil {
 		log.Error("failed to send response",
-			slog.Int64("master_id", userID),
+			slog.Int64("user_id", userID),
 			slog.Any("error", err),
 		)
 	}
@@ -647,14 +648,14 @@ func (h *MasterHandler) HandleUpdateService(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	log.Info("service updated", slog.Int64("master_id", userID))
+	log.Info("service updated", slog.Int64("user_id", userID))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
 	if _, err := w.Write(body); err != nil {
 		log.Error("failed to send response",
-			slog.Int64("master_id", userID),
+			slog.Int64("user_id", userID),
 			slog.Any("error", err),
 		)
 	}
@@ -742,14 +743,14 @@ func (h *MasterHandler) HandleReplaceSchedule(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	log.Info("schedule replaced", slog.Int64("master_id", userID))
+	log.Info("schedule replaced", slog.Int64("user_id", userID))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
 	if _, err := w.Write(body); err != nil {
 		log.Error("failed to send response",
-			slog.Int64("master_id", userID),
+			slog.Int64("user_id", userID),
 			slog.Any("error", err),
 		)
 	}
@@ -801,14 +802,14 @@ func (h *MasterHandler) HandleGetSchedule(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	log.Info("schedule received", slog.Int64("master_id", userID))
+	log.Info("schedule received", slog.Int64("user_id", userID))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
 	if _, err := w.Write(body); err != nil {
 		log.Error("failed to send response",
-			slog.Int64("master_id", userID),
+			slog.Int64("user_id", userID),
 			slog.Any("error", err),
 		)
 	}

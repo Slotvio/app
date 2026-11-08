@@ -9,7 +9,10 @@ import (
 	"time"
 
 	"github.com/aleksandrboro/slotvio/internal/config"
+	"github.com/aleksandrboro/slotvio/internal/handler"
+	"github.com/aleksandrboro/slotvio/internal/router"
 	"github.com/aleksandrboro/slotvio/internal/server"
+	"github.com/aleksandrboro/slotvio/internal/service"
 )
 
 const (
@@ -24,7 +27,14 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	server, err := server.NewServer(log, cfg, nil)
+	masterService := service.NewMasterService(log, nil)
+	masterHandler := handler.NewMasterHandler(log, masterService)
+	router, err := router.NewRouter(masterHandler)
+	if err != nil {
+		panic(err)
+	}
+
+	server, err := server.NewServer(log, cfg, router)
 	if err != nil {
 		panic(err)
 	}

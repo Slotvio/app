@@ -21,13 +21,11 @@ func NewRouter(masterHandler *handler.MasterHandler) (*mux.Router, error) {
 	router := mux.NewRouter()
 	router.Use(middleware.RequestID)
 
-	// Публичный маршрут — без auth middleware.
 	router.HandleFunc(
 		"/api/v1/masters/{slug}",
 		masterHandler.HandlePublicProfile,
 	).Methods(http.MethodGet)
 
-	// Маршруты личного кабинета мастера — с авторизацией.
 	master := router.PathPrefix("/api/v1/master").Subrouter()
 	master.Use(middleware.AuthMiddleware)
 

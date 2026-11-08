@@ -153,13 +153,9 @@ func (h *MasterHandler) HandleCreateProfile(w http.ResponseWriter, r *http.Reque
 	}
 
 	master, err := h.masterService.CreateProfile(ctx, userID, input)
-	if err != nil {
+	if err != nil || master == nil {
 		log.Error("failed to create profile", slog.Any("error", err))
 		WriteError(log, w, http.StatusInternalServerError, "internal error")
-		return
-	}
-	if master == nil {
-		WriteError(log, w, http.StatusNotFound, "masters profile not found")
 		return
 	}
 

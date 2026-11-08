@@ -294,6 +294,7 @@ func (h *MasterHandler) HandlePublicProfile(w http.ResponseWriter, r *http.Reque
 
 	for _, s := range profileData.Services {
 		resp.Services = append(resp.Services, dto.ServiceInfo{
+			ID:              s.ID,
 			Name:            s.Name,
 			Description:     s.Description,
 			DurationMinutes: s.DurationMinutes,
@@ -365,6 +366,12 @@ func (h *MasterHandler) HandleUpdateProfile(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	noProfileFields := req.Title == nil && req.Category == nil && req.Description == nil && req.Timezone == nil
+	if noProfileFields {
+		WriteError(log, w, http.StatusBadRequest, "at least one profile field must be provided")
+		return
+	}
+
 	input := service.UpdateProfileInput{
 		Title:       req.Title,
 		Category:    req.Category,
@@ -433,8 +440,8 @@ func (h *MasterHandler) HandleListServices(w http.ResponseWriter, r *http.Reques
 	}
 
 	services, err := h.masterService.ListServices(ctx, userID)
-	if err != nil || services == nil {
-		log.Error("failed to get masters services", slog.String("error", err.Error()))
+	if err != nil {
+		log.Error("failed to get masters services", slog.Any("error", err))
 		WriteError(log, w, http.StatusInternalServerError, "internal error")
 		return
 	}
@@ -525,8 +532,13 @@ func (h *MasterHandler) HandleCreateService(w http.ResponseWriter, r *http.Reque
 	}
 
 	service, err := h.masterService.CreateService(ctx, userID, input)
-	if err != nil || service == nil {
-		log.Error("failed to create service", slog.String("error", err.Error()))
+	if err != nil {
+		log.Error("failed to create service", slog.Any("error", err))
+		WriteError(log, w, http.StatusInternalServerError, "internal error")
+		return
+	}
+	if service == nil {
+		log.Error("create service returned a nil result without an error")
 		WriteError(log, w, http.StatusInternalServerError, "internal error")
 		return
 	}
@@ -550,7 +562,7 @@ func (h *MasterHandler) HandleCreateService(w http.ResponseWriter, r *http.Reque
 	log.Info("service created", slog.Int64("user_id", userID))
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 
 	if _, err := w.Write(body); err != nil {
 		log.Error("failed to send response",
@@ -617,6 +629,12 @@ func (h *MasterHandler) HandleUpdateService(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	noServiceFields := req.Name == nil && req.Description == nil && req.DurationMinutes == nil && req.Price == nil && req.IsActive == nil
+	if noServiceFields {
+		WriteError(log, w, http.StatusBadRequest, "at least one service field must be provided")
+		return
+	}
+
 	input := service.UpdateServiceInput{
 		Name:            req.Name,
 		Description:     req.Description,
@@ -626,8 +644,13 @@ func (h *MasterHandler) HandleUpdateService(w http.ResponseWriter, r *http.Reque
 	}
 
 	service, err := h.masterService.UpdateService(ctx, userID, serviceID, input)
-	if err != nil || service == nil {
-		log.Error("failed to update service", slog.String("error", err.Error()))
+	if err != nil {
+		log.Error("failed to update service", slog.Any("error", err))
+		WriteError(log, w, http.StatusInternalServerError, "internal error")
+		return
+	}
+	if service == nil {
+		log.Error("update service returned a nil result without an error")
 		WriteError(log, w, http.StatusInternalServerError, "internal error")
 		return
 	}

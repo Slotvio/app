@@ -151,11 +151,19 @@ func (h *MasterHandler) HandleCreateProfile(w http.ResponseWriter, r *http.Reque
 		Timezone:    req.Timezone,
 	}
 
-	resp, err := h.masterService.CreateProfile(ctx, userID, input)
+	master, err := h.masterService.CreateProfile(ctx, userID, input)
 	if err != nil {
 		log.Error("failed to create profile", slog.Any("error", err))
 		WriteError(log, w, http.StatusInternalServerError, "internal error")
 		return
+	}
+
+	resp := dto.ProfileResponse{
+		Slug:        master.Slug,
+		Title:       master.Title,
+		Category:    master.Category,
+		Description: master.Description,
+		Timezone:    master.Timezone,
 	}
 
 	body, err := json.Marshal(resp)

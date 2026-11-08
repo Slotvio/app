@@ -316,7 +316,7 @@ Go API ───────── PostgreSQL
 - `GET /api/v1/master/services` — список услуг.
 - `POST /api/v1/master/services` — создать услугу.
 - `PATCH /api/v1/master/services/{id}` — изменить/деактивировать услугу.
-- `PUT /api/v1/master/schedule` — заменить недельное расписание целиком.
+- `PUT /api/v1/master/schedule` — создать или заменить недельное расписание целиком.
 - `GET /api/v1/master/schedule` — получить расписание.
 - `GET /api/v1/master/bookings?from=...&to=...&status=...` — записи мастера.
 - `POST /api/v1/master/bookings/{id}/cancel` — отменить запись мастеру.

@@ -31,7 +31,7 @@ type UpdateServiceInput struct {
 }
 
 type SchedulePeriodInput struct {
-	DayOfWeek int16
+	DayOfWeek int8
 	StartTime string
 	EndTime   string
 }

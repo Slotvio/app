@@ -49,6 +49,15 @@ type UpdateProfileRequest struct {
 	Timezone    *string `json:"timezone"`
 }
 
+type UpdateProfileResponse struct {
+	ID          int64  `json:"id"`
+	Slug        string `json:"slug"`
+	Title       string `json:"title"`
+	Category    string `json:"category"`
+	Description string `json:"description"`
+	Timezone    string `json:"timezone"`
+}
+
 // HandleListServices
 type ListServiceResponse struct {
 	Services []ServiceInfo `json:"services"`
@@ -78,4 +87,39 @@ type CreateServiceResponse struct {
 	DurationMinutes int    `json:"duration_minutes"`
 	Price           int    `json:"price"`
 	IsActive        bool   `json:"is_active"`
+}
+
+// HandleUpdateService
+
+type UpdateServiceRequest struct {
+	Name            *string `json:"name"`
+	Description     *string `json:"description"`
+	DurationMinutes *int    `json:"duration_minutes"`
+	Price           *int    `json:"price"`
+	IsActive        *bool   `json:"is_active"`
+}
+
+type UpdateServiceResponse struct {
+	ID              int64  `json:"id"`
+	Name            string `json:"name"`
+	Description     string `json:"description"`
+	DurationMinutes int    `json:"duration_minutes"`
+	Price           int    `json:"price"`
+	IsActive        bool   `json:"is_active"`
+}
+
+// HandleReplaceSchedule
+type ReplaceScheduleRequest struct {
+	Days []SchedulePeriod `json:"days"`
+}
+
+type SchedulePeriod struct {
+	DayOfWeek int8   `json:"day_of_week"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+}
+
+// HandleReplaceSchedule and HandleGetSchedule
+type ScheduleResponse struct {
+	Days []SchedulePeriod `json:"days"`
 }

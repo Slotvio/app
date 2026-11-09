@@ -27,7 +27,10 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	masterService := service.NewMasterService(log, nil)
+	masterService, err := service.NewMasterService(log, nil)
+	if err != nil {
+		panic(err)
+	}
 	masterHandler := handler.NewMasterHandler(log, masterService)
 	router, err := router.NewRouter(masterHandler)
 	if err != nil {

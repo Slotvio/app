@@ -2,7 +2,11 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log/slog"
+	"net"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,9 +14,11 @@ import (
 
 	"github.com/aleksandrboro/slotvio/internal/config"
 	"github.com/aleksandrboro/slotvio/internal/handler"
+	postgres "github.com/aleksandrboro/slotvio/internal/repository"
 	"github.com/aleksandrboro/slotvio/internal/router"
 	"github.com/aleksandrboro/slotvio/internal/server"
 	"github.com/aleksandrboro/slotvio/internal/service"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
@@ -27,7 +33,17 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	masterService, err := service.NewMasterService(log, nil)
+	pool, err := createPgxPool(ctx, &cfg.DB)
+	if err != nil {
+		panic(err)
+	}
+
+	masterRepo, err := postgres.NewMasterRepo(pool)
+	if err != nil {
+		panic(err)
+	}
+
+	masterService, err := service.NewMasterService(log, masterRepo)
 	if err != nil {
 		panic(err)
 	}
@@ -83,4 +99,24 @@ func setupLogger(env string) *slog.Logger {
 	}
 
 	return log
+}
+
+func createPgxPool(ctx context.Context, dbCfg *config.DBCfg) (*pgxpool.Pool, error) {
+	if dbCfg == nil {
+		return nil, errors.New("empty db config")
+	}
+
+	connURL := url.URL{
+		Scheme: "postgres",
+		User:   url.UserPassword(dbCfg.User, dbCfg.Password),
+		Host:   net.JoinHostPort(dbCfg.Host, dbCfg.Port),
+		Path:   "/" + dbCfg.Name,
+	}
+
+	pool, err := pgxpool.New(ctx, connURL.String())
+	if err != nil {
+		return nil, fmt.Errorf("create pgx pool: %w", err)
+	}
+
+	return pool, nil
 }

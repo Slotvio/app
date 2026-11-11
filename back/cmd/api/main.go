@@ -29,6 +29,7 @@ const (
 
 func main() {
 	cfg := config.MustLoad()
+	fmt.Println(cfg)
 	log := setupLogger(cfg.App.Env)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

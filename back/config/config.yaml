@@ -11,4 +11,7 @@ server:
   write_timeout: 15s
   idle_timeout: 60s
 
+tg:
+  expiration_time: 24h
+
 db:

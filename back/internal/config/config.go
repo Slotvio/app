@@ -17,6 +17,7 @@ type Config struct {
 	App    AppCfg    `yaml:"app"`
 	Server ServerCfg `yaml:"server"`
 	DB     DBCfg     `yaml:"db"`
+	TG     TGCfg     `yaml:"tg"`
 }
 
 type AppCfg struct {
@@ -42,6 +43,11 @@ type DBCfg struct {
 	Name     string `env:"DB_NAME"`
 }
 
+type TGCfg struct {
+	Token   string        `env:"BOT_TOKEN"`
+	ExpTime time.Duration `yaml:"expiration_time"`
+}
+
 func MustLoad() Config {
 	path := fetchConfigPath()
 
@@ -60,6 +66,10 @@ func MustLoad() Config {
 	}
 
 	if err := cleanenv.ReadConfig(".env", &cfg.DB); err != nil {
+		panic(err)
+	}
+
+	if err := cleanenv.ReadConfig(".env", &cfg.TG); err != nil {
 		panic(err)
 	}
 

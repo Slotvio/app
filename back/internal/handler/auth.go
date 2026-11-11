@@ -3,19 +3,18 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log/slog"
 	"net/http"
 
 	"github.com/aleksandrboro/slotvio/internal/config"
 	"github.com/aleksandrboro/slotvio/internal/handler/dto"
 	"github.com/aleksandrboro/slotvio/internal/service"
-	initdata "github.com/telegram-mini-apps/init-data-golang"
 )
 
 type AuthHandler struct {
 	log         *slog.Logger
 	authService AuthService
-	tgCfg       config.TGCfg
 }
 
 func NewAuthHandler(log *slog.Logger, authService AuthService, tgCfg config.TGCfg) *AuthHandler {
@@ -26,7 +25,6 @@ func NewAuthHandler(log *slog.Logger, authService AuthService, tgCfg config.TGCf
 	return &AuthHandler{
 		log:         log,
 		authService: authService,
-		tgCfg:       tgCfg,
 	}
 }
 
@@ -46,21 +44,18 @@ func (h *AuthHandler) HandleAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := h.tgCfg.Token
-	if token == "" {
-		log.Error("empty bot token")
-		WriteError(log, w, http.StatusInternalServerError, "internal error")
-		return
-	}
-
-	if err := initdata.Validate(initData, token, h.tgCfg.ExpTime); err != nil {
-		log.Warn("invalid Telegram init data", slog.String("error", err.Error()))
-		WriteError(log, w, http.StatusUnauthorized, "unauthorized")
-		return
-	}
-
 	data, err := h.authService.Authenticate(ctx, initData)
 	if err != nil {
+		if errors.Is(err, service.ErrEmptyToken) {
+			log.Error("empty bot token")
+			WriteError(log, w, http.StatusInternalServerError, "internal error")
+			return
+		}
+		if errors.Is(err, service.ErrInvalidInitData) {
+			log.Warn("invalid Telegram init data", slog.String("error", err.Error()))
+			WriteError(log, w, http.StatusUnauthorized, "unauthorized")
+			return
+		}
 		log.Error("authentication failed", slog.String("error", err.Error()))
 		WriteError(log, w, http.StatusInternalServerError, "internal error")
 		return

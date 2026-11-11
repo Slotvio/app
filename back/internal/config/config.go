@@ -44,8 +44,9 @@ type DBCfg struct {
 }
 
 type TGCfg struct {
-	Token   string        `env:"BOT_TOKEN"`
-	ExpTime time.Duration `yaml:"expiration_time"`
+	Token      string        `env:"BOT_TOKEN"`
+	ExpTime    time.Duration `yaml:"expiration_time"`
+	SessionTTL time.Duration `yaml:"session_ttl"`
 }
 
 func MustLoad() Config {

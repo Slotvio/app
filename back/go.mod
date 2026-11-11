@@ -4,7 +4,10 @@ go 1.26.5
 
 require github.com/golang-migrate/migrate/v4 v4.20.1
 
-require github.com/gorilla/mux v1.8.1
+require (
+	github.com/gorilla/mux v1.8.1
+	github.com/telegram-mini-apps/init-data-golang v1.5.0
+)
 
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -12,7 +15,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.3 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.16.0 // indirect
-	github.com/telegram-mini-apps/init-data-golang v1.5.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
 )

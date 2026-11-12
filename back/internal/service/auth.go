@@ -41,6 +41,7 @@ type AuthData struct {
 type SessionRepo interface {
 	CreateSession(ctx context.Context, session domain.AuthSession) (*domain.AuthSession, error)
 	FindSessionByUserID(ctx context.Context, userID int64) (*domain.AuthSession, error)
+	FindSessionByToken(ctx context.Context, hashToken [32]byte) (userID int64, err error)
 }
 
 type UserRepo interface {
@@ -48,7 +49,7 @@ type UserRepo interface {
 	FindUserByTelegramID(ctx context.Context, telegramID int64) (*domain.User, error)
 }
 
-func (s *AuthService) Authenticate(
+func (s *AuthService) LoginWithTelegram(
 	ctx context.Context,
 	initData string,
 ) (AuthData, error) {
@@ -88,7 +89,6 @@ func (s *AuthService) Authenticate(
 		}
 	}
 
-
 	if s.tgCfg.SessionTTL <= 0 {
 		return AuthData{}, errors.New("session TTL must be positive")
 	}
@@ -116,4 +116,19 @@ func (s *AuthService) Authenticate(
 		Token:  token,
 		ExpAt:  expiresAt,
 	}, nil
+}
+
+func (s *AuthService) AuthenticateSession(ctx context.Context, token string) (int64, error) {
+	if token == "" {
+		return 0, ErrEmptyToken
+	}
+
+	hashToken := auth.HashSessionToken(token)
+
+	userID, err := s.sessionRepo.FindSessionByToken(ctx, hashToken)
+	if err != nil {
+		return 0, fmt.Errorf("find session for authentication: %w", err)
+	}
+
+	return userID, nil
 }

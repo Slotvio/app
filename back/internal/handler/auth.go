@@ -29,7 +29,7 @@ func NewAuthHandler(log *slog.Logger, authService AuthService, tgCfg config.TGCf
 }
 
 type AuthService interface {
-	Authenticate(ctx context.Context, initData string) (service.AuthData, error)
+	LoginWithTelegram(ctx context.Context, initData string) (service.AuthData, error)
 }
 
 func (h *AuthHandler) HandleAuth(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +44,7 @@ func (h *AuthHandler) HandleAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := h.authService.Authenticate(ctx, initData)
+	data, err := h.authService.LoginWithTelegram(ctx, initData)
 	if err != nil {
 		if errors.Is(err, service.ErrEmptyToken) {
 			log.Error("empty bot token")

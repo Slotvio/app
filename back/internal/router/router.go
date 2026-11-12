@@ -13,7 +13,7 @@ var (
 	errEmptyMasterHandler = errors.New("master handler is required")
 )
 
-func NewRouter(masterHandler *handler.MasterHandler) (*mux.Router, error) {
+func NewRouter(masterHandler *handler.MasterHandler, sessionAuth middleware.SessionAuthenticator) (*mux.Router, error) {
 	if masterHandler == nil {
 		return nil, errEmptyMasterHandler
 	}
@@ -27,7 +27,7 @@ func NewRouter(masterHandler *handler.MasterHandler) (*mux.Router, error) {
 	).Methods(http.MethodGet)
 
 	master := router.PathPrefix("/api/v1/master").Subrouter()
-	master.Use(middleware.AuthMiddleware)
+	master.Use(middleware.AuthMiddleware(sessionAuth))
 
 	master.HandleFunc("/profile", masterHandler.HandleCreateProfile).
 		Methods(http.MethodPost)

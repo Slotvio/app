@@ -38,6 +38,16 @@ func main() {
 		panic(err)
 	}
 
+	userRepo, err := postgres.NewUserRepo(pool)
+	if err != nil {
+		panic(err)
+	}
+
+	sessionRepo, err := postgres.NewSessionRepo(pool)
+	if err != nil {
+		panic(err)
+	}
+
 	masterRepo, err := postgres.NewMasterRepo(pool)
 	if err != nil {
 		panic(err)
@@ -47,8 +57,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	authService := service.NewAuthService(sessionRepo, userRepo, cfg.TG)
+
 	masterHandler := handler.NewMasterHandler(log, masterService)
-	router, err := router.NewRouter(masterHandler)
+	router, err := router.NewRouter(masterHandler, authService)
 	if err != nil {
 		panic(err)
 	}

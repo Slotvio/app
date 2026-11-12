@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aleksandrboro/slotvio/internal/auth"
 	"github.com/aleksandrboro/slotvio/internal/domain"
 	requestid "github.com/aleksandrboro/slotvio/internal/request_id"
 	"github.com/aleksandrboro/slotvio/internal/service"
@@ -102,7 +103,9 @@ func newHandlerForTest(svc MasterService) *MasterHandler {
 
 func requestWithID(method, path, body string) *http.Request {
 	req := httptest.NewRequest(method, path, strings.NewReader(body))
-	return req.WithContext(requestid.WithRequestID(req.Context(), "test-request-id"))
+	ctx := requestid.WithRequestID(req.Context(), "test-request-id")
+	ctx = auth.WithUserID(ctx, 1)
+	return req.WithContext(ctx)
 }
 
 func TestHandleCreateProfile(t *testing.T) {

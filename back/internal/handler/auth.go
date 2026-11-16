@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/aleksandrboro/slotvio/internal/config"
 	"github.com/aleksandrboro/slotvio/internal/handler/dto"
 	"github.com/aleksandrboro/slotvio/internal/service"
 )
@@ -17,7 +16,7 @@ type AuthHandler struct {
 	authService AuthService
 }
 
-func NewAuthHandler(log *slog.Logger, authService AuthService, tgCfg config.TGCfg) *AuthHandler {
+func NewAuthHandler(log *slog.Logger, authService AuthService) *AuthHandler {
 	if log == nil {
 		log = slog.Default()
 	}

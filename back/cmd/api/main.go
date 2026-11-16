@@ -37,6 +37,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	defer pool.Close()
 
 	userRepo, err := postgres.NewUserRepo(pool)
 	if err != nil {
@@ -61,8 +62,7 @@ func main() {
 	authService := service.NewAuthService(sessionRepo, userRepo, cfg.TG)
 
 	masterHandler := handler.NewMasterHandler(log, masterService)
-	authHandler := handler.NewAuthHandler(log, authService, cfg.TG)
-
+	authHandler := handler.NewAuthHandler(log, authService)
 	router, err := router.NewRouter(masterHandler, authHandler, authService)
 	if err != nil {
 		panic(err)
@@ -131,6 +131,10 @@ func createPgxPool(ctx context.Context, dbCfg *config.DBCfg) (*pgxpool.Pool, err
 	pool, err := pgxpool.New(ctx, connURL.String())
 	if err != nil {
 		return nil, fmt.Errorf("create pgx pool: %w", err)
+	}
+	if err := pool.Ping(ctx); err != nil {
+		pool.Close()
+		return nil, fmt.Errorf("ping database: %w", err)
 	}
 
 	return pool, nil

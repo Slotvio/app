@@ -11,11 +11,16 @@ import (
 
 var (
 	errEmptyMasterHandler = errors.New("master handler is required")
+	errEmptyAuthHandler   = errors.New("auth handler is required")
 )
 
 func NewRouter(masterHandler *handler.MasterHandler, authHandler *handler.AuthHandler, sessionAuth middleware.SessionAuthenticator) (*mux.Router, error) {
 	if masterHandler == nil {
 		return nil, errEmptyMasterHandler
+	}
+
+	if authHandler == nil {
+		return nil, errEmptyAuthHandler
 	}
 
 	router := mux.NewRouter()

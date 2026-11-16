@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -66,11 +67,14 @@ func MustLoad() Config {
 		panic(err)
 	}
 
-	if err := cleanenv.ReadConfig(".env", &cfg.DB); err != nil {
+	if err := godotenv.Load(); err != nil && !errors.Is(err, os.ErrNotExist) {
 		panic(err)
 	}
 
-	if err := cleanenv.ReadConfig(".env", &cfg.TG); err != nil {
+	if err := cleanenv.ReadEnv(&cfg.DB); err != nil {
+		panic(err)
+	}
+	if err := cleanenv.ReadEnv(&cfg.TG); err != nil {
 		panic(err)
 	}
 

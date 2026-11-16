@@ -13,8 +13,6 @@ import (
 	"github.com/aleksandrboro/slotvio/internal/service"
 )
 
-var errRouterAuthTest = errors.New("router auth test error")
-
 type routerAuthStub struct {
 	initData string
 	login    service.AuthData
@@ -35,7 +33,7 @@ func newRouterAuthStub() *routerAuthStub {
 		login: service.AuthData{
 			UserID: 1,
 			Token:  "test-session-token",
-			ExpAt:  time.Date(2026, time.January, 2, 3, 4, 5, 0, time.UTC),
+			ExpAt:  time.Date(2027, time.January, 2, 3, 4, 5, 0, time.UTC),
 		},
 	}
 }

@@ -61,7 +61,9 @@ func main() {
 	authService := service.NewAuthService(sessionRepo, userRepo, cfg.TG)
 
 	masterHandler := handler.NewMasterHandler(log, masterService)
-	router, err := router.NewRouter(masterHandler, authService)
+	authHandler := handler.NewAuthHandler(log, authService, cfg.TG)
+
+	router, err := router.NewRouter(masterHandler, authHandler, authService)
 	if err != nil {
 		panic(err)
 	}

@@ -13,13 +13,18 @@ var (
 	errEmptyMasterHandler = errors.New("master handler is required")
 )
 
-func NewRouter(masterHandler *handler.MasterHandler, sessionAuth middleware.SessionAuthenticator) (*mux.Router, error) {
+func NewRouter(masterHandler *handler.MasterHandler, authHandler *handler.AuthHandler, sessionAuth middleware.SessionAuthenticator) (*mux.Router, error) {
 	if masterHandler == nil {
 		return nil, errEmptyMasterHandler
 	}
 
 	router := mux.NewRouter()
 	router.Use(middleware.RequestID)
+
+	router.HandleFunc(
+		"/api/v1/auth/telegram",
+		authHandler.HandleAuth,
+	).Methods(http.MethodPost)
 
 	router.HandleFunc(
 		"/api/v1/masters/{slug}",

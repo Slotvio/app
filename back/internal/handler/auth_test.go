@@ -33,7 +33,7 @@ func newAuthHandlerForTest(svc AuthService) *AuthHandler {
 }
 
 func TestHandleAuthSuccess(t *testing.T) {
-	wantExpiry := time.Date(2027, time.January, 2, 3, 4, 5, 0, time.UTC)
+	wantExpiry := time.Date(2026, time.January, 2, 3, 4, 5, 0, time.UTC)
 	var gotInitData string
 	stub := &authServiceStub{
 		loginFn: func(_ context.Context, initData string) (service.AuthData, error) {

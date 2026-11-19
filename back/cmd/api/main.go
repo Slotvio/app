@@ -54,7 +54,17 @@ func main() {
 		panic(err)
 	}
 
+	bookingRepo, err := postgres.NewBookingRepo(pool)
+	if err != nil {
+		panic(err)
+	}
+
 	masterService, err := service.NewMasterService(log, masterRepo)
+	if err != nil {
+		panic(err)
+	}
+
+	bookingService, err := service.NewBookingService(bookingRepo)
 	if err != nil {
 		panic(err)
 	}
@@ -63,7 +73,8 @@ func main() {
 
 	masterHandler := handler.NewMasterHandler(log, masterService)
 	authHandler := handler.NewAuthHandler(log, authService)
-	router, err := router.NewRouter(masterHandler, authHandler, authService)
+	bookingHandler := handler.NewBookingHandler(log, bookingService)
+	router, err := router.NewRouter(masterHandler, authHandler, bookingHandler, authService)
 	if err != nil {
 		panic(err)
 	}

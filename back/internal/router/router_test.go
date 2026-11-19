@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aleksandrboro/slotvio/internal/domain"
 	"github.com/aleksandrboro/slotvio/internal/handler"
 	"github.com/aleksandrboro/slotvio/internal/service"
 )
@@ -33,37 +34,61 @@ func newRouterAuthStub() *routerAuthStub {
 		login: service.AuthData{
 			UserID: 1,
 			Token:  "test-session-token",
-			ExpAt:  time.Date(2027, time.January, 2, 3, 4, 5, 0, time.UTC),
+			ExpAt:  time.Date(2026, time.January, 2, 3, 4, 5, 0, time.UTC),
 		},
 	}
+}
+
+type routerBookingStub struct{}
+
+func (routerBookingStub) GetAvailableSlots(context.Context, string, int64, string) (service.AvailableSlots, error) {
+	return service.AvailableSlots{}, nil
+}
+
+func (routerBookingStub) CreateBooking(context.Context, int64, service.CreateBookingInput) (*domain.Booking, error) {
+	return &domain.Booking{ID: 1, Status: "booked"}, nil
+}
+
+func newRouterBookingHandler() *handler.BookingHandler {
+	return handler.NewBookingHandler(nil, routerBookingStub{})
 }
 
 func TestNewRouterRejectsNilRequiredHandlers(t *testing.T) {
 	stub := newRouterAuthStub()
 	authHandler := handler.NewAuthHandler(nil, stub)
 	masterHandler := handler.NewMasterHandler(nil, nil)
+	bookingHandler := newRouterBookingHandler()
 
 	tests := []struct {
-		name          string
-		masterHandler *handler.MasterHandler
-		authHandler   *handler.AuthHandler
-		wantErr       error
+		name           string
+		masterHandler  *handler.MasterHandler
+		authHandler    *handler.AuthHandler
+		bookingHandler *handler.BookingHandler
+		wantErr        error
 	}{
 		{
-			name:        "nil master handler",
-			authHandler: authHandler,
-			wantErr:     errEmptyMasterHandler,
+			name:           "nil master handler",
+			authHandler:    authHandler,
+			bookingHandler: bookingHandler,
+			wantErr:        errEmptyMasterHandler,
 		},
 		{
-			name:          "nil auth handler",
+			name:           "nil auth handler",
+			masterHandler:  masterHandler,
+			bookingHandler: bookingHandler,
+			wantErr:        errEmptyAuthHandler,
+		},
+		{
+			name:          "nil booking handler",
 			masterHandler: masterHandler,
-			wantErr:       errEmptyAuthHandler,
+			authHandler:   authHandler,
+			wantErr:       errEmptyBookingHandler,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewRouter(tt.masterHandler, tt.authHandler, stub)
+			got, err := NewRouter(tt.masterHandler, tt.authHandler, tt.bookingHandler, stub)
 			if !errors.Is(err, tt.wantErr) {
 				t.Fatalf("NewRouter() error = %v, want %v", err, tt.wantErr)
 			}
@@ -79,6 +104,7 @@ func TestNewRouterRegistersTelegramAuthRoute(t *testing.T) {
 	r, err := NewRouter(
 		handler.NewMasterHandler(nil, nil),
 		handler.NewAuthHandler(nil, stub),
+		newRouterBookingHandler(),
 		stub,
 	)
 	if err != nil {
@@ -117,6 +143,7 @@ func TestNewRouterProtectsMasterRoutes(t *testing.T) {
 	r, err := NewRouter(
 		handler.NewMasterHandler(nil, nil),
 		handler.NewAuthHandler(nil, stub),
+		newRouterBookingHandler(),
 		stub,
 	)
 	if err != nil {

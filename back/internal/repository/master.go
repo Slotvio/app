@@ -78,7 +78,7 @@ func (r *MasterRepo) GetPublicMasterBySlug(ctx context.Context, slug string) (do
 	query := `SELECT ` + masterColumns + ` FROM masters WHERE slug = $1`
 	master, err := scanMaster(r.db.QueryRow(ctx, query, slug))
 	if err != nil {
-		return domain.Master{}, fmt.Errorf("get public master by slug: %w", err)
+		return domain.Master{}, fmt.Errorf("get master by slug: %w", err)
 	}
 	return master, nil
 }

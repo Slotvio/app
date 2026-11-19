@@ -10,31 +10,42 @@ import (
 )
 
 var (
-	errEmptyMasterHandler = errors.New("master handler is required")
-	errEmptyAuthHandler   = errors.New("auth handler is required")
+	errEmptyMasterHandler  = errors.New("master handler is required")
+	errEmptyAuthHandler    = errors.New("auth handler is required")
+	errEmptyBookingHandler = errors.New("booking handler is required")
 )
 
-func NewRouter(masterHandler *handler.MasterHandler, authHandler *handler.AuthHandler, sessionAuth middleware.SessionAuthenticator) (*mux.Router, error) {
+func NewRouter(
+	masterHandler *handler.MasterHandler,
+	authHandler *handler.AuthHandler,
+	bookingHandler *handler.BookingHandler,
+	sessionAuth middleware.SessionAuthenticator,
+) (*mux.Router, error) {
 	if masterHandler == nil {
 		return nil, errEmptyMasterHandler
 	}
-
 	if authHandler == nil {
 		return nil, errEmptyAuthHandler
+	}
+	if bookingHandler == nil {
+		return nil, errEmptyBookingHandler
 	}
 
 	router := mux.NewRouter()
 	router.Use(middleware.RequestID)
 
-	router.HandleFunc(
-		"/api/v1/auth/telegram",
-		authHandler.HandleAuth,
-	).Methods(http.MethodPost)
+	router.HandleFunc("/api/v1/auth/telegram", authHandler.HandleAuth).
+		Methods(http.MethodPost)
 
-	router.HandleFunc(
-		"/api/v1/masters/{slug}",
-		masterHandler.HandlePublicProfile,
-	).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/masters/{slug}/slots", bookingHandler.HandleListSlots).
+		Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/masters/{slug}", masterHandler.HandlePublicProfile).
+		Methods(http.MethodGet)
+
+	router.Handle(
+		"/api/v1/bookings",
+		middleware.AuthMiddleware(sessionAuth)(http.HandlerFunc(bookingHandler.HandleCreateBooking)),
+	).Methods(http.MethodPost)
 
 	master := router.PathPrefix("/api/v1/master").Subrouter()
 	master.Use(middleware.AuthMiddleware(sessionAuth))
